@@ -5,15 +5,12 @@ import copy
 from toraDinamicaUtil import *
 
 
-def medirTempo(metodo, vetor, ini=None, fim=None):
-  vetorCopia = vetor.copy()
-  params = [vetorCopia, ini, fim]
-  params = [p for p in params if p != None]
-
+def realizarExperimento(metodo, precos, tamanhoTora):
+  params = [precos, tamanhoTora]
   inicioT = time.perf_counter()
-  metodo(*params)
+  valorMaxTora = metodo(*params)
   fimT = time.perf_counter()
-  return fimT - inicioT
+  return {"tempo": (fimT - inicioT), "valor":valorMaxTora}
 
 
 def geraVetorAleatorio(tam):
@@ -22,90 +19,39 @@ def geraVetorAleatorio(tam):
     vetor.append(random.randint(1, tam * 4))
   return vetor
 
-
-def desordenaVetor(vetor, porcentagemDesordem=10):
-  tamVetor = len(vetor)
-  # Resolveu-se por dividir a porcentagem de desordem por 2
-  # para que o número total de itens desordenados seja, de fato,
-  # mais próxima de dois por cento, em relação ao tamanho do vetor.
-  numItemsDesordem = int(porcentagemDesordem / 100 / 2 * tamVetor)
-  indicesDesordenados = random.sample(range(tamVetor), numItemsDesordem)
-  for indiceDes in indicesDesordenados:
-    novoIndice = random.randint(0, tamVetor - 1)
-    temp = vetor[novoIndice]
-    vetor[novoIndice] = vetor[indiceDes]
-    vetor[indiceDes] = temp
-
-
-def geraVetores(tam):
-  vetorAleatorio = geraVetorAleatorio(tam)
-  vetorOrdemCresc = vetorAleatorio[:]
-  vetorOrdemCresc.sort()
-  vetorReverso = vetorAleatorio[:]
-  vetorReverso.sort(reverse=True)
-  vetorQuaseOrdenado = vetorOrdemCresc[:]
-  desordenaVetor(vetorQuaseOrdenado)
-  return {
-    "RANDOM": vetorAleatorio,
-    "SORTED": vetorOrdemCresc,
-    "REVERSE": vetorReverso,
-    "NEARLY SORTED": vetorQuaseOrdenado
-  }
-
-
-def media(vetor):
-  return sum(vetor) / len(vetor)
-
-
 def imprimirResultados(resultados):
-  for tipoVetor, valoresTipoVetor in resultados.items():
-    print(f"[ [{tipoVetor}] ]")
-    print("n\tSelection\tInsertion\tMerge\t\tHeap\t\tQuick\t\tCounting")
-    print("-" * 96)
-    for tam, valoresTam in valoresTipoVetor.items():
-      print(f"{tam}\t", end="")
-      for nomeOrd, valOrd in valoresTam.items():
-        print("{0:.6f}\t".format(valOrd), end="")
-      print()
-    print("\n")
+  print("n\tvDP\ttDP\t\tvGreedy\t\ttGreedy\t\t%")
+  print("-" * 70)
+  for tam, valoresTam in resultados.items():
+    print(f"{tam}\t", end="")
+    print("{:d}\t".format(valoresTam["vDP"]), end="")
+    print("{0:.6f}\t".format(valoresTam["tDP"]), end="")
+    print("{:d}\t\t".format(valoresTam["vGreedy"]), end="")
+    print("{0:.6f}\t".format(valoresTam["tGreedy"]), end="")
+    print("{0:.2f}\t".format(valoresTam["%"]), end="")
+    print()
+  print("\n")
 
 
-def iniciar(inc, fim, stp, rpt):
+def iniciar(inc, fim, stp):
   modeloResultado = {}
-  tamanhosVetores = range(inc, fim + 1, stp)
-  for tam in tamanhosVetores:
+  tamanhosTora = range(inc, fim + 1, stp)
+  for tam in tamanhosTora:
     modeloResultado[tam] = {}
-    for nomeOrd in ordenadores:
-      modeloResultado[tam][nomeOrd] = []
-  resultados = {
-    "RANDOM": copy.deepcopy(modeloResultado),
-    "SORTED": copy.deepcopy(modeloResultado),
-    "REVERSE": copy.deepcopy(modeloResultado),
-    "NEARLY SORTED": copy.deepcopy(modeloResultado)
-  }
+    for nomeMetodo in rodCutters:
+      modeloResultado[tam]["v"+nomeMetodo] = 0
+      modeloResultado[tam]["t"+nomeMetodo] = 0
+    modeloResultado[tam]["%"] = 0
+  resultados = copy.deepcopy(modeloResultado)
 
-  for tam in tamanhosVetores:
-    for _ in range(rpt):
-      vetoresTeste = geraVetores(tam)
-      for nomeTipoVetor, vetor in vetoresTeste.items():
-        if( (nomeTipoVetor == "SORTED" or nomeTipoVetor == "REVERSE") and _ > 0):
-          continue
-        for nomeOrd, metodoOrd in ordenadores.items():
-          params = []
-          if (nomeOrd == "mergeSort" or nomeOrd == "quickSort"):
-            params = [metodoOrd, vetor, 0, len(vetor) - 1]
-          elif (nomeOrd == "countingSort"):
-            params = [metodoOrd, vetor, max(vetor)]
-          else:
-            params = [metodoOrd, vetor]
-          resultados[nomeTipoVetor][tam][nomeOrd].append(medirTempo(*params))
-
-  # Depois da execução de todo o conjunto de experimentos
-  # realiza-se a média dos tempos de cada repetição.
-  for tipoVetor in resultados:
-    for tam in tamanhosVetores:
-      for nomeOrd in ordenadores:
-        vetorTempoOrd = resultados[tipoVetor][tam][nomeOrd]
-        resultados[tipoVetor][tam][nomeOrd] = sum(vetorTempoOrd) / rpt
+  for tam in tamanhosTora:
+      precosTora = geraVetorAleatorio(tam)
+      for nomeMetodo, metodoMedicao in rodCutters.items():
+        params = [metodoMedicao, precosTora, tam]
+        resultadoExperimento = realizarExperimento(*params)
+        resultados[tam]["v"+nomeMetodo] = resultadoExperimento["valor"]
+        resultados[tam]["t"+nomeMetodo] = resultadoExperimento["tempo"]
+      resultados[tam]["%"] = (resultados[tam]["vGreedy"] / resultados[tam]["vDP"]) * 100
   imprimirResultados(resultados)
+  print(resultados)
   return (resultados)

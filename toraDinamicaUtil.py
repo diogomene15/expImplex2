@@ -26,7 +26,6 @@ def toraGreedy(precos, tamanhoTora):
             "preco": precoTamAtual
           }
     vetorPesos.sort(key=lambda x: x["densidade"], reverse=True)
-    print(vetorPesos)
     restoTora = tamanhoTora
     valorTora = 0
     for item in vetorPesos:
@@ -36,7 +35,7 @@ def toraGreedy(precos, tamanhoTora):
     return valorTora
             
 
-ordenadores = {
-  "toraDinamica": toraDinamica,
-  "toraGreedy": toraGreedy,
+rodCutters = {
+  "DP": toraDinamica,
+  "Greedy": toraGreedy,
 }
