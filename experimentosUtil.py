@@ -20,8 +20,9 @@ def geraVetorAleatorio(tam):
   return vetor
 
 def imprimirResultados(resultados):
-  print("n\tvDP\t\ttDP\t\tvGreedy\t\ttGreedy\t\t%")
-  print("-" * 70)
+  header = "n\tvDP\t\ttDP\t\tvGreedy\t\ttGreedy\t\t%"
+  print(header)
+  print("-" * 78)
   for tam, valoresTam in resultados.items():
     print(f"{tam}\t", end="")
     print("{:d}\t\t".format(valoresTam["vDP"]), end="")
@@ -53,5 +54,4 @@ def iniciar(inc, fim, stp):
         resultados[tam]["t"+nomeMetodo] = resultadoExperimento["tempo"]
       resultados[tam]["%"] = (resultados[tam]["vGreedy"] / resultados[tam]["vDP"]) * 100
   imprimirResultados(resultados)
-  print(resultados)
   return (resultados)
