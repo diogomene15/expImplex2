@@ -16,15 +16,15 @@ def realizarExperimento(metodo, precos, tamanhoTora):
 def geraVetorAleatorio(tam):
   vetor = []
   for _ in range(1, tam + 1):
-    vetor.append(random.randint(1, tam * 4))
+    vetor.append(random.randint(1, tam))
   return vetor
 
 def imprimirResultados(resultados):
-  print("n\tvDP\ttDP\t\tvGreedy\t\ttGreedy\t\t%")
+  print("n\tvDP\t\ttDP\t\tvGreedy\t\ttGreedy\t\t%")
   print("-" * 70)
   for tam, valoresTam in resultados.items():
     print(f"{tam}\t", end="")
-    print("{:d}\t".format(valoresTam["vDP"]), end="")
+    print("{:d}\t\t".format(valoresTam["vDP"]), end="")
     print("{0:.6f}\t".format(valoresTam["tDP"]), end="")
     print("{:d}\t\t".format(valoresTam["vGreedy"]), end="")
     print("{0:.6f}\t".format(valoresTam["tGreedy"]), end="")
