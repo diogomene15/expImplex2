@@ -16,7 +16,7 @@ def realizarExperimento(metodo, precos, tamanhoTora):
 def geraVetorAleatorio(tam):
   vetor = []
   for _ in range(1, tam + 1):
-    vetor.append(random.randint(1, tam))
+    vetor.append(random.randint(1, 10))
   return vetor
 
 def imprimirResultados(resultados):

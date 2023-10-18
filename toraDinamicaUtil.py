@@ -17,6 +17,8 @@ def toraDinamica(precos, tamanhoTora):
 
 
 def toraGreedy(precos, tamanhoTora):
+    if(tamanhoTora == 0):
+        return 0
     vetorPesos = [-1] * (tamanhoTora)
     for i in range(0, tamanhoTora):
         precoTamAtual = precos[i]
@@ -25,13 +27,15 @@ def toraGreedy(precos, tamanhoTora):
             "tamanho": i+1,
             "preco": precoTamAtual
           }
-    vetorPesos.sort(key=lambda x: x["densidade"], reverse=True)
     restoTora = tamanhoTora
     valorTora = 0
-    for item in vetorPesos:
-        if item["tamanho"] <= restoTora:
+
+    while (restoTora > 0):
+        item = max(vetorPesos, key=lambda x:x['densidade'])
+        while(item["tamanho"] <= restoTora):
             valorTora += item["preco"]
             restoTora -= item["tamanho"]
+        vetorPesos.remove(item)
     return valorTora
             
 
