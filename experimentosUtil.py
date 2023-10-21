@@ -2,7 +2,7 @@
 import random
 import time
 import copy
-from toraDinamicaUtil import *
+from toraAlgorithmsUtil import *
 
 
 def realizarExperimento(metodo, precos, tamanhoTora):
