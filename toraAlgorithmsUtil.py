@@ -1,3 +1,4 @@
+# Diogo de Lima Menezes e Marcos Vinicius Medeiros
 def toraDinamicaAux(precos, tamanhoTora, memento):
     res = -1
     if memento[tamanhoTora] >= 0:
